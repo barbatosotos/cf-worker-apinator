@@ -1,3 +1,13 @@
+# cf-worker-apinator
+A lightweight Cloudflare Worker that provides compatible endpoints for **Apinator**.
+
+> **Official Resources**
+>
+> - 🌐 Website: https://apinator.io
+> - 📚 GitHub: https://github.com/apinator-io
+
+---
+
 ## Endpoints
 
 ### `POST /trigger`
@@ -88,12 +98,3 @@ Invoke-RestMethod -Method POST `
   "auth": "app_xxxxx:xxxxx"
 }
 ```
-
----
-
-## Endpoint Summary
-
-| Method | Endpoint   | Description                                            |
-| ------ | ---------- | ------------------------------------------------------ |
-| `POST` | `/trigger` | Broadcast an event to a channel.                       |
-| `POST` | `/auth`    | Generate authentication for private/presence channels. |
