@@ -127,35 +127,34 @@ class Apinator {
 
   // Verifikasi webhook (synchronous)
   verifyWebhook(headers, body, maxAge = 300) {
-  const signature = headers['x-realtime-signature'];
-  const timestamp  = headers['x-realtime-timestamp'];
+    const signature = headers['x-realtime-signature'];
+    const timestamp  = headers['x-realtime-timestamp'];
 
-  if (!signature || !timestamp) {
-    console.log('[webhook] FAIL: missing header');
-    return false;
+    if (!signature || !timestamp) {
+      //console.log('[webhook] FAIL: missing header');
+      return false;
+    }
+
+    const age = Math.abs(Math.floor(Date.now() / 1000) - parseInt(timestamp, 10));
+    if (age > maxAge) {
+      //console.log('[webhook] FAIL: timestamp terlalu lama', age);
+      return false;
+    }
+
+    const expected = signWebhookPayload(this.#secret, timestamp, body);
+
+    // Log semua info sekaligus dalam satu baris
+    // console.log(JSON.stringify({
+    //   secret_prefix : this.#secret.slice(0, 8) + '...', // cek 8 char pertama saja
+    //   timestamp,
+    //   body,
+    //   expected,
+    //   received : signature,
+    //   match    : expected === signature,
+    // }));
+
+    return expected === signature;
   }
-
-  const age = Math.abs(Math.floor(Date.now() / 1000) - parseInt(timestamp, 10));
-  if (age > maxAge) {
-    console.log('[webhook] FAIL: timestamp terlalu lama', age);
-    return false;
-  }
-
-  const expected = signWebhookPayload(this.#secret, timestamp, body);
-
-  // Log semua info sekaligus dalam satu baris
-  console.log(JSON.stringify({
-    secret_prefix : this.#secret.slice(0, 8) + '...', // cek 8 char pertama saja
-    timestamp,
-    body,
-    expected,
-    received : signature,
-    match    : expected === signature,
-  }));
-
-  return expected === signature;
-}
-
 
   // Private: HTTP request dengan HMAC signing
   async #request(method, path, body) {
@@ -262,7 +261,7 @@ export default {
         }
 
         const event = JSON.parse(body);
-        console.log('Webhook received:', JSON.stringify(event));
+        // console.log('Webhook received:', JSON.stringify(event));
         // TODO: proses event.name, event.data sesuai kebutuhan
 
         return Response.json({ received: true });
