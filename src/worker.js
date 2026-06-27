@@ -130,27 +130,32 @@ class Apinator {
   const signature = headers['x-realtime-signature'];
   const timestamp  = headers['x-realtime-timestamp'];
 
-  console.log('[webhook] signature received :', signature);
-  console.log('[webhook] timestamp received  :', timestamp);
-
   if (!signature || !timestamp) {
     console.log('[webhook] FAIL: missing header');
     return false;
   }
 
   const age = Math.abs(Math.floor(Date.now() / 1000) - parseInt(timestamp, 10));
-  console.log('[webhook] timestamp age (detik):', age, '| maxAge:', maxAge);
   if (age > maxAge) {
-    console.log('[webhook] FAIL: timestamp terlalu lama');
+    console.log('[webhook] FAIL: timestamp terlalu lama', age);
     return false;
   }
 
   const expected = signWebhookPayload(this.#secret, timestamp, body);
-  console.log('[webhook] expected  :', expected);
-  console.log('[webhook] received  :', signature);
-  console.log('[webhook] match     :', expected === signature);
+
+  // Log semua info sekaligus dalam satu baris
+  console.log(JSON.stringify({
+    secret_prefix : this.#secret.slice(0, 8) + '...', // cek 8 char pertama saja
+    timestamp,
+    body,
+    expected,
+    received : signature,
+    match    : expected === signature,
+  }));
+
   return expected === signature;
 }
+
 
   // Private: HTTP request dengan HMAC signing
   async #request(method, path, body) {
