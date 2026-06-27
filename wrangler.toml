@@ -1,0 +1,12 @@
+name = "apinator-worker"
+main = "src/worker.js"
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+APINATOR_CLUSTER = "us"
+
+# Set via CLI:
+# wrangler secret put APINATOR_APP_ID
+# wrangler secret put APINATOR_KEY
+# wrangler secret put APINATOR_SECRET
